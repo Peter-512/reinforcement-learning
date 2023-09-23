@@ -1,6 +1,6 @@
-from be.kdg.rl.agent.episode import Episode
-from be.kdg.rl.environment.environment import Environment
-from be.kdg.rl.learning.tabular.tabular_learning import TabularLearner
+from agent.episode import Episode
+from environment.environment import Environment
+from learning.tabular.tabular_learning import TabularLearner
 
 
 class Qlearning(TabularLearner):

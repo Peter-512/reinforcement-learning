@@ -3,9 +3,9 @@ from abc import abstractmethod
 import numpy as np
 from numpy import ndarray
 
-from be.kdg.rl.agent.episode import Episode
-from be.kdg.rl.environment.environment import Environment
-from be.kdg.rl.learning.learningstrategy import LearningStrategy
+from agent.episode import Episode
+from environment.environment import Environment
+from learning.learningstrategy import LearningStrategy
 
 
 class TabularLearner(LearningStrategy):

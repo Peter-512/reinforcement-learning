@@ -1,10 +1,10 @@
 from abc import abstractmethod
 
-from be.kdg.rl.agent.episode import Episode
-from be.kdg.rl.agent.percept import Percept
-from be.kdg.rl.environment.environment import Environment
-from be.kdg.rl.learning.learningstrategy import LearningStrategy
-from be.kdg.rl.learning.tabular.tabular_learning import TabularLearner
+from agent.episode import Episode
+from agent.percept import Percept
+from environment.environment import Environment
+from learning.learningstrategy import LearningStrategy
+from learning.tabular.tabular_learning import TabularLearner
 
 
 class Agent:

@@ -1,6 +1,6 @@
-from be.kdg.rl.agent.agent import TabularAgent, Agent
-from be.kdg.rl.environment.openai import FrozenLakeEnvironment
-from be.kdg.rl.learning.tabular.qlearning import Qlearning, NStepQlearning
+from agent.agent import TabularAgent, Agent
+from environment.openai import FrozenLakeEnvironment
+from learning.tabular.qlearning import Qlearning, NStepQlearning
 
 if __name__ == '__main__':
     # example use of the code base

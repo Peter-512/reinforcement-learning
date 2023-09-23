@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from be.kdg.rl.agent.episode import Episode
-from be.kdg.rl.environment.environment import Environment
+from agent.episode import Episode
+from environment.environment import Environment
 
 
 class LearningStrategy(ABC):

@@ -1,7 +1,7 @@
 from collections import deque
 
-from be.kdg.rl.agent.percept import Percept
-from be.kdg.rl.environment.environment import Environment
+from agent.percept import Percept
+from environment.environment import Environment
 
 
 class Episode:

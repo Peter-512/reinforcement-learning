@@ -3,7 +3,7 @@ from abc import ABC
 import gymnasium as gym
 from gymnasium.wrappers import TimeLimit
 
-from be.kdg.rl.environment.environment import Environment
+from environment.environment import Environment
 
 
 class OpenAIGym(Environment, ABC):
