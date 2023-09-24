@@ -1,10 +1,11 @@
 from agent.agent import TabularAgent, Agent
 from environment.openai import FrozenLakeEnvironment
-from learning.tabular.qlearning import Qlearning, NStepQlearning
+from learning.tabular.qlearning import Qlearning
 
 if __name__ == '__main__':
     # example use of the code base
     environment = FrozenLakeEnvironment()
+    # mdp = MarkovDecisionProcess(environment)
 
     # create an Agent that uses Qlearning Strategy
     agent: Agent = TabularAgent(environment, Qlearning(environment))

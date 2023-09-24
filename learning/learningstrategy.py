@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 from agent.episode import Episode
 from environment.environment import Environment
 
@@ -19,7 +21,7 @@ class LearningStrategy(ABC):
         self.ε_min = 0.0005  # Minimum exploration probability (given)
 
         self.ε = self.ε_max  # (decaying) probability of selecting random action according to ε-soft policy
-        self.t_max = t_max  # upper limit voor episode
+        self.t_max = t_max  # upper limit for episode
         self.t = 0  # episode time step
         self.τ = 0  # overall time step
 
@@ -46,8 +48,7 @@ class LearningStrategy(ABC):
 
     def decay(self):
         # Reduce epsilon ε, because we need less and less exploration as time progresses
-        # TODO: COMPLETE THE CODE
-        pass
+        self.ε = self.ε_min + (self.ε_max - self.ε_min) * np.exp(-self.λ * self.τ)
 
     def on_episode_end(self):
         self.τ += 1

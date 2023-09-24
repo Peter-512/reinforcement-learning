@@ -1,4 +1,7 @@
+import numpy as np
+
 from agent.episode import Episode
+from agent.percept import Percept
 from environment.environment import Environment
 from learning.tabular.tabular_learning import TabularLearner
 
@@ -9,7 +12,13 @@ class Qlearning(TabularLearner):
         TabularLearner.__init__(self, environment, α, λ, γ, t_max)
 
     def learn(self, episode: Episode):
-        # TODO: COMPLETE THE CODE
+        # implement the Q-learning algorithm
+        p: Percept = episode.percepts(1)
+        s = p.state
+        a = p.action
+        r = p.reward
+        self.q_values[s, a] = self.q_values[s, a] + self.α * (
+                r + self.γ * np.max(self.q_values[p.next_state, :]) - self.q_values[s, a])
 
         super().learn(episode)
 

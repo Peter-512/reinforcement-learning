@@ -42,13 +42,19 @@ class TabularLearner(LearningStrategy):
         self.t = 0
 
     def next_action(self, s: int):
-        # TODO: COMPLETE THE CODE, REPLACE THE LINE BELOW
-        return self.env.action_space.sample()
+        return np.random.choice(self.env.n_actions, p=self.π[:, s])
 
     def evaluate(self):
-        # TODO: COMPLETE THE CODE
-        pass
+        for s in range(self.env.state_size):
+            self.v_values[s] = np.max(self.q_values[s])
 
     def improve(self):
-        # TODO: COMPLETE THE CODE
-        pass
+        for s in range(self.env.state_size):
+            a_star = np.argmax(self.q_values[s])  # todo implement myself since np doesnt implement tie-breaking
+            for a in range(self.env.n_actions):
+                if a == a_star:
+                    self.π[a, s] = 1 - self.ε + self.ε / self.env.n_actions
+                else:
+                    self.π[a, s] = self.ε / self.env.n_actions
+        self.decay()
+        # self.ε[self.t] = self.ε_min + (self.ε_max - self.ε_min) * np.exp(-self.λ * self.t)

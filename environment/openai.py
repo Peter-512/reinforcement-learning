@@ -15,7 +15,7 @@ class OpenAIGym(Environment, ABC):
     def __init__(self, name: str) -> None:
         super().__init__()
         self._name = name
-        self._env: TimeLimit = gym.make(name, render_mode='human')
+        self._env: TimeLimit = TimeLimit(gym.make(name, render_mode='ansi'), max_episode_steps=5)
 
     def reset(self):
         return self._env.reset()

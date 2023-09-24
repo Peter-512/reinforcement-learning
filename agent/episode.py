@@ -1,3 +1,4 @@
+import random
 from collections import deque
 
 from agent.percept import Percept
@@ -20,18 +21,16 @@ class Episode:
 
     def percepts(self, n: int):
         """ Return n final percepts from this Episode """
-        # TODO: COMPLETE THE CODE
-        pass
+        return self._percepts[-n]
 
     def compute_returns(self) -> None:
         """ For EACH Percept in the Episode, calculate its discounted return Gt"""
-        # TODO: COMPLETE THE CODE
-        pass
+        for percept in self._percepts:
+            percept._return = percept.reward + self._env.γ ** percept.next_state
 
     def sample(self, batch_size: int):
         """ Sample and return a random batch of Percepts from this Episode """
-        # TODO: COMPLETE THE CODE
-        pass
+        return random.sample(self._percepts, batch_size)
 
     @property
     def size(self):
