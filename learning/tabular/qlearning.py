@@ -31,8 +31,15 @@ class NStepQlearning(TabularLearner):
         self.percepts = []  # this will buffer the percepts
 
     def learn(self, episode: Episode):
-        # TODO: COMPLETE THE CODE
-
+        if self.n > len(episode.percepts(self.n)):
+            return
+        # implement the N-step Q-learning algorithm
+        for percept in episode.percepts(self.n):
+            s = percept.state
+            a = percept.action
+            r = percept.reward
+            self.q_values[s, a] = self.q_values[s, a] + self.α * (
+                    r + self.γ * np.max(self.q_values[percept.next_state, :]) - self.q_values[s, a])
         super().learn(episode)
 
 

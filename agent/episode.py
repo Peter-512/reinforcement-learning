@@ -20,8 +20,12 @@ class Episode:
         self._percepts.append(percept)
 
     def percepts(self, n: int):
+        percepts_to_return = []
         """ Return n final percepts from this Episode """
-        return self._percepts[-n]
+        for index, percept in enumerate(self._percepts):
+            if index >= len(self._percepts) - n:
+                percepts_to_return.append(percept)
+        return percepts_to_return
 
     def compute_returns(self) -> None:
         """ For EACH Percept in the Episode, calculate its discounted return Gt"""
