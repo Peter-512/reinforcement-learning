@@ -34,12 +34,13 @@ class Percept:
 
     def __repr__(self):
         # uses SARS - format as a convention
-        return '<in {} do {} get {} -> {}>'.format(self._state, self._action, self._reward, self._next_state)
+        direction = {0: 'left', 1: 'down', 2: 'right', 3: 'up'}
+        return '<in {} do {} get {} -> {}>'.format(self._state, direction[self._action], self._reward, self._next_state)
 
     def __hash__(self):
-        return hash((self.state, self.action, self.reward, self.next_state))
+        return hash((self._state, self._action, self._reward, self._next_state))
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return NotImplemented
-        return self.state == other.state and self.action == other.action and self.reward == other.reward and self.next_state == other.next_state
+        return self._state == other._state and self._action == other._action and self._reward == other._reward and self._next_state == other._next_state

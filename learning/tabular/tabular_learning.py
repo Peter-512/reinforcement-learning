@@ -42,7 +42,9 @@ class TabularLearner(LearningStrategy):
         self.t = 0
 
     def next_action(self, s: int):
-        return np.random.choice(self.env.n_actions, p=self.π[:, s])
+        if self.ε > np.random.random():
+            return self.env.action_space.sample()
+        return np.argmax(self.q_values[s])
 
     def evaluate(self):
         for s in range(self.env.state_size):
@@ -57,4 +59,6 @@ class TabularLearner(LearningStrategy):
                 else:
                     self.π[a, s] = self.ε / self.env.n_actions
         self.decay()
-        # self.ε[self.t] = self.ε_min + (self.ε_max - self.ε_min) * np.exp(-self.λ * self.t)
+
+    def __repr__(self):
+        return f"TabularLearner(α: {self.α}, λ: {self.λ}, γ: {self.γ}, t_max: {self.t_max})"

@@ -12,10 +12,11 @@ class OpenAIGym(Environment, ABC):
     Wrapper for all OpenAI Environments
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, render=False) -> None:
         super().__init__()
         self._name = name
-        self._env: TimeLimit = TimeLimit(gym.make(name, render_mode='ansi'), max_episode_steps=5)
+        render_mode = 'human' if render else None
+        self._env: TimeLimit = TimeLimit(gym.make(name, render_mode=render_mode), max_episode_steps=100)
 
     def reset(self):
         return self._env.reset()
@@ -24,7 +25,8 @@ class OpenAIGym(Environment, ABC):
         return self._env.step(action)
 
     def render(self):
-        self._env.render()
+        if self._env.render_mode:
+            self._env.render()
 
     def close(self) -> None:
         self._env.close()
@@ -59,11 +61,11 @@ class OpenAIGym(Environment, ABC):
 
 class FrozenLakeEnvironment(OpenAIGym):
 
-    def __init__(self) -> None:
-        super().__init__(name="FrozenLake-v1")
+    def __init__(self, render=False) -> None:
+        super().__init__(name="FrozenLake-v1", render=render)
 
 
 class CartPoleEnvironment(OpenAIGym):
 
-    def __init__(self) -> None:
-        super().__init__(name="CartPole-v0")
+    def __init__(self, render=False) -> None:
+        super().__init__(name="CartPole-v0", render=render)

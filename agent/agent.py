@@ -26,9 +26,14 @@ class Agent:
         return self.episode_count > self.n_episodes
 
 
+class MarkovAgent(Agent):
+    def __int__(self, environment: Environment, n_episodes=10_000) -> None:
+        super().__init__(environment, None, n_episodes)
+
+
 class TabularAgent(Agent):
 
-    def __init__(self, environment: Environment, learning_strategy: TabularLearner, n_episodes=10000) -> None:
+    def __init__(self, environment: Environment, learning_strategy: TabularLearner, n_episodes=10_000) -> None:
         super().__init__(environment, learning_strategy, n_episodes)
 
     def train(self) -> None:
@@ -60,6 +65,7 @@ class TabularAgent(Agent):
                 # create Percept object from observed values state,action,r,s' (SARS') and terminate flag, but
                 # ignore values truncated and info
                 percept = Percept((state, action, r, t, terminated))
+                print(percept)
 
                 # add the newly created Percept to the Episode
                 episode.add(percept)
