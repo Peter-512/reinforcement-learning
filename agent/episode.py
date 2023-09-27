@@ -27,6 +27,9 @@ class Episode:
                 percepts_to_return.append(percept)
         return percepts_to_return
 
+    def is_done(self):
+        return self._percepts[-1].done
+
     def compute_returns(self) -> None:
         """ For EACH Percept in the Episode, calculate its discounted return Gt"""
         for percept in self._percepts:
