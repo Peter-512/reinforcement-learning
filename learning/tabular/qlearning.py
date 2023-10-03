@@ -13,13 +13,12 @@ class Qlearning(TabularLearner):
 
     def learn(self, episode: Episode):
         # implement the Q-learning algorithm
-        p: Percept = episode.percepts(1)
+        p: Percept = episode.percepts(1)[-1]
         s = p.state
         a = p.action
         r = p.reward
         self.q_values[s, a] = self.q_values[s, a] + self.α * (
                 r + self.γ * np.max(self.q_values[p.next_state, :]) - self.q_values[s, a])
-
         super().learn(episode)
 
 

@@ -52,9 +52,7 @@ class MarkovDecisionProcess:
     def update_counts(self, percept: Percept) -> None:
         # TODO: COMPLETE THE CODE
         self.n_sa[percept.state, percept.action] += 1
-        pass
 
     def update_transition_model(self, percept: Percept) -> None:
         # TODO: COMPLETE THE CODE
         self.n_tsa[percept.state, percept.next_state, percept.action] += 1
-        pass

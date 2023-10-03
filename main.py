@@ -1,6 +1,7 @@
 import numpy as np
 
 from agent.agent import TabularAgent, Agent
+from environment.markovdecisionprocess import MarkovDecisionProcess
 from environment.openai import FrozenLakeEnvironment
 from learning.tabular.qlearning import Qlearning, NStepQlearning, MonteCarloLearning
 
@@ -13,7 +14,9 @@ if __name__ == '__main__':
     # agent.train()
 
     # create an Agent that uses NStepQlearning Strategy
-    agent: Agent = TabularAgent(environment, MonteCarloLearning(environment, np.inf))
+    # agent: Agent = TabularAgent(environment, Qlearning(environment))
+    agent: Agent = TabularAgent(environment, NStepQlearning(environment, 5))
+    # agent: Agent = TabularAgent(environment, MonteCarloLearning(environment, np.inf))
     agent.train()
 
     print(agent.learning_strategy.π)
