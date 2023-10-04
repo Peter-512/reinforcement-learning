@@ -63,6 +63,10 @@ class OpenAIGym(Environment, ABC):
     def map_shape(self) -> str:
         return self._env.unwrapped.desc.shape
 
+    @property
+    def map(self) -> str:
+        return self._env.unwrapped.desc
+
 
 class FrozenLakeEnvironment(OpenAIGym):
 
