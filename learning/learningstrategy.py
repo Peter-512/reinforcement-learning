@@ -66,7 +66,7 @@ class LearningStrategy(ABC):
             l = [one, two, three, four]
             ideal_path.append(np.argmax(l))
 
-        direction = {0: 'left', 1: 'down', 2: 'right', 3: 'up'}
+        direction = {0: '⬅', 1: '⬇', 2: '➡︎', 3: '⬆'}
         for i in range(len(ideal_path)):
             ideal_path[i] = direction[ideal_path[i]]
         print(np.array(ideal_path).reshape(self.env.map_shape))
