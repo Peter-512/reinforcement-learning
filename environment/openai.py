@@ -1,6 +1,7 @@
 from abc import ABC
 
 import gymnasium as gym
+from gymnasium.envs.toy_text.frozen_lake import generate_random_map
 from gymnasium.wrappers import TimeLimit
 
 from environment.environment import Environment
@@ -12,11 +13,11 @@ class OpenAIGym(Environment, ABC):
     Wrapper for all OpenAI Environments
     """
 
-    def __init__(self, name: str, render=False) -> None:
+    def __init__(self, name: str, render=False, **kwargs) -> None:
         super().__init__()
         self._name = name
         render_mode = 'human' if render else None
-        self._env: TimeLimit = TimeLimit(gym.make(name, render_mode=render_mode), max_episode_steps=100)
+        self._env: TimeLimit = TimeLimit(gym.make(name, render_mode=render_mode, **kwargs), max_episode_steps=100)
 
     def reset(self):
         return self._env.reset()
@@ -58,14 +59,22 @@ class OpenAIGym(Environment, ABC):
     def name(self) -> str:
         return self._name
 
+    @property
+    def map_shape(self) -> str:
+        return self._env.unwrapped.desc.shape
+
 
 class FrozenLakeEnvironment(OpenAIGym):
 
-    def __init__(self, render=False) -> None:
-        super().__init__(name="FrozenLake-v1", render=render)
+    def __init__(self, render=False, is_slippery=True, random=False, size=4) -> None:
+        if size not in [4, 8] and not random:
+            raise ValueError("Size must be 4 or 8 or random must be True")
+        super().__init__(name="FrozenLake-v1", render=render, is_slippery=is_slippery,
+                         desc=generate_random_map(size) if random else None,
+                         map_name=None if random else '4x4' if size == 4 else '8x8')
 
 
 class CartPoleEnvironment(OpenAIGym):
 
     def __init__(self, render=False) -> None:
-        super().__init__(name="CartPole-v0", render=render)
+        super().__init__(name="CartPole-v1", render=render)

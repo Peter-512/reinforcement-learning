@@ -52,3 +52,21 @@ class LearningStrategy(ABC):
 
     def on_episode_end(self):
         self.τ += 1
+
+    def show_policy(self):
+        print("Policy:")
+        pi = self.π
+        ideal_path = []
+        # loop through the nested array pi breath first and find the largest value for each state
+        for i in range(len(pi[0])):
+            one = pi[0][i]
+            two = pi[1][i]
+            three = pi[2][i]
+            four = pi[3][i]
+            l = [one, two, three, four]
+            ideal_path.append(np.argmax(l))
+
+        direction = {0: 'left', 1: 'down', 2: 'right', 3: 'up'}
+        for i in range(len(ideal_path)):
+            ideal_path[i] = direction[ideal_path[i]]
+        print(np.array(ideal_path).reshape(self.env.map_shape))

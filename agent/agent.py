@@ -65,7 +65,7 @@ class TabularAgent(Agent):
                 # create Percept object from observed values state,action,r,s' (SARS') and terminate flag, but
                 # ignore values truncated and info
                 percept = Percept((state, action, r, t, terminated))
-                print(percept)
+                # print(percept)
 
                 # add the newly created Percept to the Episode
                 episode.add(percept)
