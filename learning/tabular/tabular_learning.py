@@ -16,7 +16,7 @@ class TabularLearner(LearningStrategy):
     v_values: ndarray
     q_values: ndarray
 
-    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99) -> None:
+    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=1000) -> None:
         super().__init__(environment, λ, γ, t_max)
         # learning rate
         self.α = α
@@ -34,8 +34,9 @@ class TabularLearner(LearningStrategy):
     def learn(self, episode: Episode):
         # subclasses insert their implementation at this point
         # see for example be\kdg\rl\learning\tabular\qlearning.py
-        if self.τ % self.stat_ep == 0:
-            self.stats_generator.generate_quiver_from_data(np.reshape(self.get_ideal_path(), self.env.map_shape))
+        if self.τ % self.stats_generator.e == 0 and self.t == 0:
+            self.stats_generator.generate_quiver_from_data(np.reshape(self.get_ideal_path(), self.env.map_shape),
+                                                           self.env.map_arr)
         self.evaluate()
         self.improve()
         super().learn(episode)
@@ -54,7 +55,8 @@ class TabularLearner(LearningStrategy):
 
     def improve(self):
         for s in range(self.env.state_size):
-            a_star = np.argmax(self.q_values[s])  # todo implement myself since np doesnt implement tie-breaking
+            a_star = np.random.choice(np.flatnonzero(self.q_values[s] == self.q_values[s].max()))
+
             for a in range(self.env.n_actions):
                 if a == a_star:
                     self.π[a, s] = 1 - self.ε + self.ε / self.env.n_actions

@@ -25,8 +25,7 @@ class LearningStrategy(ABC):
         self.t_max = t_max  # upper limit for episode
         self.t = 0  # episode time step
         self.τ = 0  # overall time step
-        self.stats_generator = Stats(self.env.map_shape)
-        self.stat_ep = episode_stats
+        self.stats_generator = Stats(self.env.map_shape, episode_stats)
 
     @abstractmethod
     def next_action(self, state):
@@ -59,11 +58,18 @@ class LearningStrategy(ABC):
     def show_policy(self):
         print("Policy:")
         ideal_path = self.get_ideal_path()
+        self.stats_generator.generate_final_policy_gif(np.array(ideal_path).reshape(self.env.map_shape),
+                                                       self.env.map_arr)
 
         direction = {0: '⬅', 1: '⬇', 2: '➡︎', 3: '⬆'}
         for i in range(len(ideal_path)):
             ideal_path[i] = direction[ideal_path[i]]
-        self.stats_generator.generate_final_policy_gif(np.array(ideal_path).reshape(self.env.map_shape))
+
+        for i in range(len(ideal_path)):
+            # flatten the map
+            map = np.array(self.env.map_arr).flatten()
+            if map[i] == b'H':
+                ideal_path[i] = '🚫'
         print(np.array(ideal_path).reshape(self.env.map_shape))
 
     def get_ideal_path(self):

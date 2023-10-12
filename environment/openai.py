@@ -65,6 +65,10 @@ class OpenAIGym(Environment, ABC):
 
     @property
     def map(self) -> str:
+        return str(self.map_arr).replace("b'F'", '⬜️').replace("b'G'", '🔶').replace("b'H'", '🚫').replace("b'S'", '🟧')
+
+    @property
+    def map_arr(self):
         return self._env.unwrapped.desc
 
 

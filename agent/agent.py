@@ -76,9 +76,6 @@ class TabularAgent(Agent):
                 # learn from Percepts in Episode
                 self.learning_strategy.learn(episode)
 
-                # learn from one or more Percepts in the Episode
-                self.learning_strategy.learn(episode)
-
                 # update state
                 state = percept.next_state
 

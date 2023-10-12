@@ -20,7 +20,6 @@ def clear_directory(directory):
         if os.path.isfile(file_path):
             try:
                 os.remove(file_path)
-                print(f"Deleted: {file_path}")
             except Exception as e:
                 print(f"Failed to delete: {file_path} ({e})")
 
@@ -45,7 +44,7 @@ class Stats:
         create_directory_if_not_exists("./screenshots")
         clear_directory("./screenshots")
 
-    def generate_quiver_from_data(self, data: np.ndarray):
+    def generate_quiver_from_data(self, data: np.ndarray, map_arr: np.ndarray):
         global u, v
         fig, ax = plt.subplots(figsize=(data.shape[1], data.shape[0]))
         # add extra left margin to grid
@@ -56,6 +55,12 @@ class Stats:
 
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
+                color = 'blue'
+                if map_arr[i, j] == b'H':
+                    color = 'red'
+                elif map_arr[i, j] == b'G':
+                    color = 'green'
+
                 direction = data[i, j]
 
                 if direction == 0:
@@ -74,14 +79,15 @@ class Stats:
                 x = j
                 y = data.shape[0] - 1 - i
 
-                ax.quiver(x, y, u, v, angles='xy', scale_units='xy', scale=1.5, color='blue', pivot='mid')
+                ax.quiver(x, y, u, v, angles='xy', scale_units='xy', scale=1.5, color=color, pivot='mid', width=0.02,
+                          headwidth=4)
         plt.title(f"Episode Nr. {self.graph_count * self.e}")
         plt.savefig(f"./screenshots/{self.graph_count}_policy.png")
         plt.close()
         self.graph_count += 1
 
-    def generate_final_policy_gif(self, data: np.ndarray):
-        self.generate_quiver_from_data(data)
+    def generate_final_policy_gif(self, data: np.ndarray, map_arr: np.ndarray):
+        self.generate_quiver_from_data(data, map_arr)
         self.generate_gif()
         clear_directory("./screenshots")
 
@@ -100,8 +106,8 @@ class Stats:
         create_directory_if_not_exists("./runs")
         clear_directory("./runs")
         output_gif = "./runs/output.gif"
-        # set duration variable useing the number of episodes per iteration
-        duration = self.e
+        # set duration variable using the number of episodes per iteration
+        duration = self.e * 2
 
         # Save the frames as an animated GIF
         frames[0].save(output_gif, save_all=True, append_images=frames[1:], duration=duration, loop=0)
