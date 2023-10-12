@@ -70,6 +70,8 @@ class LearningStrategy(ABC):
             map = np.array(self.env.map_arr).flatten()
             if map[i] == b'H':
                 ideal_path[i] = '🚫'
+            elif map[i] == b'G':
+                ideal_path[i] = '🏁'
         print(np.array(ideal_path).reshape(self.env.map_shape))
 
     def get_ideal_path(self):
