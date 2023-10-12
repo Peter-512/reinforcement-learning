@@ -4,6 +4,7 @@ import numpy as np
 
 from agent.episode import Episode
 from environment.environment import Environment
+from stats.graph_plotter import Stats
 
 
 class LearningStrategy(ABC):
@@ -13,7 +14,7 @@ class LearningStrategy(ABC):
     """
     env: Environment
 
-    def __init__(self, environment: Environment, λ, γ, t_max) -> None:
+    def __init__(self, environment: Environment, λ, γ, t_max, episode_stats=100) -> None:
         self.env = environment
         self.λ = λ  # exponential decay rate used for exploration/exploitation (given)
         self.γ = γ  # discount rate for exploration (given)
@@ -24,6 +25,8 @@ class LearningStrategy(ABC):
         self.t_max = t_max  # upper limit for episode
         self.t = 0  # episode time step
         self.τ = 0  # overall time step
+        self.stats_generator = Stats(self.env.map_shape)
+        self.stat_ep = episode_stats
 
     @abstractmethod
     def next_action(self, state):
@@ -55,6 +58,15 @@ class LearningStrategy(ABC):
 
     def show_policy(self):
         print("Policy:")
+        ideal_path = self.get_ideal_path()
+
+        direction = {0: '⬅', 1: '⬇', 2: '➡︎', 3: '⬆'}
+        for i in range(len(ideal_path)):
+            ideal_path[i] = direction[ideal_path[i]]
+        self.stats_generator.generate_final_policy_gif(np.array(ideal_path).reshape(self.env.map_shape))
+        print(np.array(ideal_path).reshape(self.env.map_shape))
+
+    def get_ideal_path(self):
         pi = self.π
         ideal_path = []
         # loop through the nested array pi breath first and find the largest value for each state
@@ -65,8 +77,4 @@ class LearningStrategy(ABC):
             four = pi[3][i]
             l = [one, two, three, four]
             ideal_path.append(np.argmax(l))
-
-        direction = {0: '⬅', 1: '⬇', 2: '➡︎', 3: '⬆'}
-        for i in range(len(ideal_path)):
-            ideal_path[i] = direction[ideal_path[i]]
-        print(np.array(ideal_path).reshape(self.env.map_shape))
+        return ideal_path

@@ -34,6 +34,8 @@ class TabularLearner(LearningStrategy):
     def learn(self, episode: Episode):
         # subclasses insert their implementation at this point
         # see for example be\kdg\rl\learning\tabular\qlearning.py
+        if self.τ % self.stat_ep == 0:
+            self.stats_generator.generate_quiver_from_data(np.reshape(self.get_ideal_path(), self.env.map_shape))
         self.evaluate()
         self.improve()
         super().learn(episode)
