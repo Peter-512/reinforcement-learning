@@ -5,11 +5,12 @@ from agent.percept import Percept
 from environment.environment import Environment
 from learning.learningstrategy import LearningStrategy
 from learning.tabular.tabular_learning import TabularLearner
+from stats.reward_signal import RewardSignal
 
 
 class Agent:
 
-    def __init__(self, environment: Environment, learning_strategy: LearningStrategy, n_episodes=10000):
+    def __init__(self, environment: Environment, learning_strategy: LearningStrategy, n_episodes=10_000):
         super().__init__()
         self.env = environment
         self.learning_strategy = learning_strategy
@@ -35,6 +36,8 @@ class TabularAgent(Agent):
 
     def __init__(self, environment: Environment, learning_strategy: TabularLearner, n_episodes=10_000) -> None:
         super().__init__(environment, learning_strategy, n_episodes)
+        self.reward_signal = RewardSignal(learning_strategy.__class__.__name__)
+        self.reward_signal.setup()
 
     def train(self) -> None:
         super(TabularAgent, self).train()
@@ -58,6 +61,9 @@ class TabularAgent(Agent):
                 # agent observes the results of his action
                 # step method returns a tuple with values (s', r, terminated, truncated, info)
                 t, r, terminated, truncated, info = self.env.step(action)
+
+                if terminated or truncated:
+                    self.reward_signal.add(r)
 
                 # render environment (don't render every step, only every X-th, or at the end of the learning process)
                 self.env.render()
@@ -88,3 +94,4 @@ class TabularAgent(Agent):
             self.episode_count += 1
 
         self.env.close()
+        self.reward_signal.plot()

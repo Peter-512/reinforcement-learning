@@ -15,9 +15,9 @@ if __name__ == '__main__':
     # agent.train()
 
     # create an Agent that uses NStepQlearning Strategy
-    agent: Agent = TabularAgent(environment, Qlearning(environment))
+    # agent: Agent = TabularAgent(environment, Qlearning(environment))
     # agent: Agent = TabularAgent(environment, NStepQlearning(environment, 5))
-    # agent: Agent = TabularAgent(environment, MonteCarloLearning(environment, np.inf))
+    agent: Agent = TabularAgent(environment, MonteCarloLearning(environment))
     agent.train()
 
     agent.learning_strategy.show_policy()

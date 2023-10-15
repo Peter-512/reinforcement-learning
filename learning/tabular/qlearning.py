@@ -27,34 +27,25 @@ class NStepQlearning(TabularLearner):
     def __init__(self, environment: Environment, n: int, α=0.7, λ=0.0005, γ=0.9, t_max=99) -> None:
         TabularLearner.__init__(self, environment, α, λ, γ, t_max)
         self.n = n  # maximum number of percepts before learning kicks in
-        self.percepts = []  # this will buffer the percepts
 
     def learn(self, episode: Episode):
-        if self.n > len(episode.percepts(self.n)):
-            return
-        # implement the N-step Q-learning algorithm
-        for percept in episode.percepts(self.n):
-            s = percept.state
-            a = percept.action
-            r = percept.reward
-            self.q_values[s, a] = self.q_values[s, a] + self.α * (
-                    r + self.γ * np.max(self.q_values[percept.next_state, :]) - self.q_values[s, a])
+        if self.n <= len(episode.percepts(self.n)):
+            # implement the N-step Q-learning algorithm
+            for percept in episode.percepts(self.n):
+                s = percept.state
+                a = percept.action
+                r = percept.reward
+                self.q_values[s, a] = self.q_values[s, a] + self.α * (
+                        r + self.γ * np.max(self.q_values[percept.next_state, :]) - self.q_values[s, a])
         super().learn(episode)
 
 
-class MonteCarloLearning(TabularLearner):
-    def __init__(self, environment: Environment, n: int, α=0.7, λ=0.0005, γ=0.9, t_max=99) -> None:
-        TabularLearner.__init__(self, environment, α, λ, γ, t_max)
-        self.n = n  # maximum number of percepts before learning kicks in
-        self.percepts = []  # this will buffer the percepts
+class MonteCarloLearning(NStepQlearning):
+    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99) -> None:
+        super().__init__(environment, np.Inf, α, λ, γ, t_max)
 
     def learn(self, episode: Episode):
-        if not episode.is_done():
-            return
-        for percept in episode.percepts(self.n):
-            s = percept.state
-            a = percept.action
-            r = percept.reward
-            self.q_values[s, a] = self.q_values[s, a] + self.α * (
-                    r + self.γ * np.max(self.q_values[percept.next_state, :]) - self.q_values[s, a])
+        self.n = np.Inf
+        if episode.is_done():
+            self.n = episode.size
         super().learn(episode)
