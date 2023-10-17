@@ -14,7 +14,7 @@ class LearningStrategy(ABC):
     """
     env: Environment
 
-    def __init__(self, environment: Environment, λ, γ, t_max, episode_stats=1000) -> None:
+    def __init__(self, environment: Environment, λ, γ, t_max, episode_stats=200) -> None:
         self.env = environment
         self.λ = λ  # exponential decay rate used for exploration/exploitation (given)
         self.γ = γ  # discount rate for exploration (given)
