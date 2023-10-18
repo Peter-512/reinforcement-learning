@@ -14,11 +14,11 @@ class LearningStrategy(ABC):
     """
     env: Environment
 
-    def __init__(self, environment: Environment, λ, γ, t_max, episode_stats=200) -> None:
+    def __init__(self, environment: Environment, λ, γ, t_max, episode_stats=200, ε_max=1.0) -> None:
         self.env = environment
         self.λ = λ  # exponential decay rate used for exploration/exploitation (given)
         self.γ = γ  # discount rate for exploration (given)
-        self.ε_max = 1.0  # Exploration probability at start (given)
+        self.ε_max = ε_max  # Exploration probability at start (given)
         self.ε_min = 0.0005  # Minimum exploration probability (given)
 
         self.ε = self.ε_max  # (decaying) probability of selecting random action according to ε-soft policy

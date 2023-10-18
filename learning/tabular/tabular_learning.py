@@ -16,8 +16,9 @@ class TabularLearner(LearningStrategy):
     v_values: ndarray
     q_values: ndarray
 
-    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=1000) -> None:
-        super().__init__(environment, λ, γ, t_max)
+    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99, episode_stats=200,
+                 ε_max=1.0) -> None:
+        super().__init__(environment, λ, γ, t_max, episode_stats, ε_max)
         # learning rate
         self.α = α
 
@@ -45,9 +46,9 @@ class TabularLearner(LearningStrategy):
         self.t = 0
 
     def next_action(self, s: int):
-        if self.ε > np.random.random():
-            return self.env.action_space.sample()
-        return np.argmax(self.q_values[s])
+        # if self.ε > np.random.random():
+        #     return self.env.action_space.sample()
+        return np.random.choice(np.arange(self.env.n_actions), p=self.π[:, s])
 
     def evaluate(self):
         for s in range(self.env.state_size):

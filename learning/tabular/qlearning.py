@@ -8,8 +8,9 @@ from learning.tabular.tabular_learning import TabularLearner
 
 class Qlearning(TabularLearner):
 
-    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99) -> None:
-        TabularLearner.__init__(self, environment, α, λ, γ, t_max)
+    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99, ε_max=1.0,
+                 episode_stats=200) -> None:
+        super().__init__(environment, α, λ, γ, t_max, episode_stats, ε_max)
 
     def learn(self, episode: Episode):
         # implement the Q-learning algorithm
@@ -24,8 +25,9 @@ class Qlearning(TabularLearner):
 
 class NStepQlearning(TabularLearner):
 
-    def __init__(self, environment: Environment, n: int, α=0.7, λ=0.0005, γ=0.9, t_max=99) -> None:
-        TabularLearner.__init__(self, environment, α, λ, γ, t_max)
+    def __init__(self, environment: Environment, n: int, α=0.7, λ=0.0005, γ=0.9, t_max=99, ε_max=1.0,
+                 episode_stats=200) -> None:
+        super().__init__(environment, α, λ, γ, t_max, episode_stats, ε_max)
         self.n = n  # maximum number of percepts before learning kicks in
 
     def learn(self, episode: Episode):
@@ -41,8 +43,9 @@ class NStepQlearning(TabularLearner):
 
 
 class MonteCarloLearning(NStepQlearning):
-    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99) -> None:
-        super().__init__(environment, np.Inf, α, λ, γ, t_max)
+    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99, ε_max=1.0,
+                 episode_stats=200) -> None:
+        super().__init__(environment, np.Inf, α, λ, γ, t_max, ε_max, episode_stats)
 
     def learn(self, episode: Episode):
         self.n = np.Inf
