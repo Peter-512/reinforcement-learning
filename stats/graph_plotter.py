@@ -86,12 +86,12 @@ class Stats:
         plt.close()
         self.graph_count += 1
 
-    def generate_final_policy_gif(self, data: np.ndarray, map_arr: np.ndarray):
+    def generate_final_policy_gif(self, data: np.ndarray, map_arr: np.ndarray, name: str = 'output'):
         self.generate_quiver_from_data(data, map_arr)
-        self.generate_gif()
+        self.generate_gif(name)
         clear_directory("./screenshots")
 
-    def generate_gif(self):
+    def generate_gif(self, name: str):
         png_files = os.listdir("./screenshots")
 
         # Create a list to store each frame (PNG image)
@@ -105,7 +105,7 @@ class Stats:
         # Set the output GIF file name and duration between frames (in milliseconds)
         create_directory_if_not_exists("./runs")
         clear_directory("./runs")
-        output_gif = "./runs/output.gif"
+        output_gif = f"./runs/{name}.gif"
         # set duration variable using the number of episodes per iteration
         duration = self.e * 2
 

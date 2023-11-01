@@ -1,5 +1,6 @@
 import random
 from collections import deque
+import numpy as np
 
 from agent.percept import Percept
 from environment.environment import Environment
@@ -20,20 +21,16 @@ class Episode:
         self._percepts.append(percept)
 
     def percepts(self, n: int):
-        percepts_to_return = []
-        """ Return n final percepts from this Episode """
-        for index, percept in enumerate(self._percepts):
-            if index >= len(self._percepts) - n:
-                percepts_to_return.append(percept)
-        return percepts_to_return
+        """ Return n final percepts from this Episode or less if the Episode is shorter than n """
+        return list(self._percepts)[-n:]
 
     def is_done(self):
         return self._percepts[-1].done
 
-    def compute_returns(self) -> None:
+    def compute_returns(self, γ) -> None:
         """ For EACH Percept in the Episode, calculate its discounted return Gt"""
         for percept in self._percepts:
-            percept._return = percept.reward + self._env.γ ** percept.next_state
+            percept._return = percept.reward + γ ** percept.next_state
 
     def sample(self, batch_size: int):
         """ Sample and return a random batch of Percepts from this Episode """

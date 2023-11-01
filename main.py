@@ -10,9 +10,9 @@ if __name__ == '__main__':
     print(environment.map)
 
     # create a learning strategy
-    # learning_strategy: TabularLearner = Qlearning(environment, ε_max=0.1)
-    # learning_strategy: TabularLearner = NStepQlearning(environment, 5, ε_max=0.1)
-    learning_strategy: TabularLearner = MonteCarloLearning(environment, ε_max=0.05)
+    learning_strategy: TabularLearner = Qlearning(environment)
+    # learning_strategy: TabularLearner = NStepQlearning(environment, 5)
+    # learning_strategy: TabularLearner = MonteCarloLearning(environment)
 
     # create an Agent that uses NStepQlearning Strategy
     agent: Agent = TabularAgent(environment, learning_strategy)
