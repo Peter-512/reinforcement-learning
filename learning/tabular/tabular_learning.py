@@ -16,9 +16,8 @@ class TabularLearner(LearningStrategy):
     v_values: ndarray
     q_values: ndarray
 
-    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99,
-                 ε_max=1.0, ) -> None:
-        super().__init__(environment, λ, γ, t_max, ε_max)
+    def __init__(self, environment: Environment, α=0.7, λ=0.0005, γ=0.9, t_max=99, ε_min=0.0005, ε_max=1.0) -> None:
+        super().__init__(environment, λ, γ, t_max, ε_min, ε_max)
         # learning rate
         self.α = α
 

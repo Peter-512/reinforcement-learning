@@ -12,12 +12,12 @@ class LearningStrategy(ABC):
     This class is INCOMPLETE
     """
 
-    def __init__(self, environment: Environment, λ, γ, t_max, ε_max=1.0) -> None:
+    def __init__(self, environment: Environment, λ, γ, t_max, ϵ_min=0.0005, ε_max=1.0) -> None:
         self.env = environment
         self.λ = λ  # exponential decay rate used for exploration/exploitation (given)
         self.γ = γ  # discount rate for exploration (given)
         self.ε_max = ε_max  # Exploration probability at start (given)
-        self.ε_min = 0.0005  # Minimum exploration probability (given)
+        self.ε_min = ϵ_min  # Minimum exploration probability (given)
 
         self.ε = self.ε_max  # (decaying) probability of selecting random action according to ε-soft policy
         self.t_max = t_max  # upper limit for episode
