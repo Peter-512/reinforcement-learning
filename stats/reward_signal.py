@@ -54,5 +54,6 @@ class WinPercentage(Plotter):
         plt.ylabel('Win Percentage')
         plt.title('Win Percentage for ' + self.strategy + ' Strategy')
         plt.ylim(0, 100)
+        plt.yticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
         plt.grid(True)
         plt.show()
