@@ -104,7 +104,6 @@ class Stats:
         frames.sort(key=lambda x: int(x.filename.split("_")[0].split("/")[2]))
         # Set the output GIF file name and duration between frames (in milliseconds)
         create_directory_if_not_exists("./runs")
-        clear_directory("./runs")
         output_gif = f"./runs/{name}.gif"
         # set duration variable using the number of episodes per iteration
         duration = self.e * 2
