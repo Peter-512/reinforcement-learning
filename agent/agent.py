@@ -110,3 +110,7 @@ class TabularAgent(Agent):
         self.stats_generator.generate_final_policy_gif(
             np.array(self.learning_strategy.get_ideal_path()).reshape(self.env.map_shape),
             self.env.map_arr, self.learning_strategy.__class__.__name__)
+        print('q table:\n', self.learning_strategy.q_values)
+        print('v table:\n', self.learning_strategy.v_values.reshape(self.env.map_shape))
+        print('π table:\n',
+              self.learning_strategy.π.reshape(self.env.n_actions, self.env.map_shape[0], self.env.map_shape[1]))
