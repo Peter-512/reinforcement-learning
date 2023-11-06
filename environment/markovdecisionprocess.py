@@ -58,3 +58,18 @@ class MarkovDecisionProcess:
         state, action, _, next_state, _ = percept
         for s in range(self.n_states):
             self.P[state, s, action] = self.n_tsa[state, s, action] / self.n_sa[state, action]
+
+    def best_action(self, state: int) -> int:
+        """
+        Choose the best action for a given state based on expected rewards.
+        """
+        best_action = None
+        max_reward = -np.inf
+
+        for action in range(self.n_actions):
+            current_reward = self.reward(state, action)
+            if current_reward > max_reward:
+                max_reward = current_reward
+                best_action = action
+
+        return best_action if best_action is not None else self.env.action_space.sample()

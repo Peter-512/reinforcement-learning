@@ -51,14 +51,14 @@ class SuperAgent(Agent):
             state, _ = self.env.reset()
 
             while True:
-                action = self.env.action_space.sample()
+                action = self.mdp.best_action(state)
                 t, r, terminated, truncated, info = self.env.step(action)
-                print('state:', state, 'action:', action, 'reward:', r, 'next_state:', t, 'terminated:', terminated)
                 if terminated and r == 0:
                     r = -1
                 elif not terminated:
                     r = -0.01
-                input()
+                elif terminated and r == 1:
+                    r = 100
                 self.env.render()
                 percept = Percept((state, action, r, t, terminated))
                 episode.add(percept)
@@ -69,10 +69,12 @@ class SuperAgent(Agent):
 
             self.episode_count += 1
             self.win_percentage.add(r)
+            win = 1 if r == 100 else 0
+            self.reward_signal.add(r)
 
         self.env.close()
         self.win_percentage.plot()
-        print(self.mdp.P)
+        self.reward_signal.plot()
 
 
 class TabularAgent(Agent):
