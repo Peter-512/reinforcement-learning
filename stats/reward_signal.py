@@ -57,3 +57,23 @@ class WinPercentage(Plotter):
         plt.yticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
         plt.grid(True)
         plt.show()
+
+
+class EpsilonDecay(Plotter):
+    def __init__(self, strategy):
+        super().__init__(strategy)
+        self.epsilon_values = []
+
+    def add(self, value):
+        self.episodes.append(next(self.episodes_counter))
+        self.epsilon_values.append(value)
+
+    def plot(self):
+        plt.plot(self.episodes, self.epsilon_values, linewidth=2.0)
+        plt.xlabel('Episodes')
+        plt.ylabel('Epsilon Value')
+        plt.title('Epsilon values for ' + self.strategy + ' Strategy')
+        plt.ylim(0, 1)
+        plt.yticks([0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1])
+        plt.grid(True)
+        plt.show()

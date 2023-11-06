@@ -86,3 +86,9 @@ class CartPoleEnvironment(OpenAIGym):
 
     def __init__(self, render=False) -> None:
         super().__init__(name="CartPole-v1", render=render)
+
+
+class CliffWalkingEnvironment(OpenAIGym):
+
+    def __init__(self, render=False) -> None:
+        super().__init__(name="CliffWalking-v0", render=render)
