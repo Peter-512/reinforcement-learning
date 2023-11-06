@@ -8,6 +8,7 @@ from learning.learningstrategy import LearningStrategy
 from learning.tabular.tabular_learning import TabularLearner
 from stats.reward_signal import RewardSignal, WinPercentage
 from stats.graph_plotter import Stats
+from environment.markovdecisionprocess import MarkovDecisionProcess
 
 
 class Agent:
@@ -34,9 +35,43 @@ class Agent:
         return self.episode_count > self.n_episodes
 
 
-class MarkovAgent(Agent):
-    def __int__(self, environment: Environment, n_episodes=10_000) -> None:
-        super().__init__(environment, None, n_episodes)
+class SuperAgent(Agent):
+    def __init__(self, mdp: MarkovDecisionProcess, n_episodes=10_000):
+        self.mdp = mdp
+        self.env = mdp.env
+        super().__init__(mdp.env, n_episodes=n_episodes, learning_strategy=None)
+
+    def train(self):
+        while not self.done:
+            # start a new episode
+            episode = Episode(self.env)
+            self.episodes.append(episode)
+            # initialize the start state
+            state, _ = self.env.reset()
+
+            while True:
+                action = self.env.action_space.sample()
+                t, r, terminated, truncated, info = self.env.step(action)
+                print('state:', state, 'action:', action, 'reward:', r, 'next_state:', t, 'terminated:', terminated)
+                if terminated and r == 0:
+                    r = -1
+                elif not terminated:
+                    r = -0.01
+                input()
+                self.env.render()
+                percept = Percept((state, action, r, t, terminated))
+                episode.add(percept)
+                self.mdp.update((state, action, r, t, terminated))
+                state = percept.next_state
+                if percept.done:
+                    break
+
+            self.episode_count += 1
+            self.win_percentage.add(r)
+
+        self.env.close()
+        self.win_percentage.plot()
+        print(self.mdp.P)
 
 
 class TabularAgent(Agent):
@@ -67,10 +102,6 @@ class TabularAgent(Agent):
                 # step method returns a tuple with values (s', r, terminated, truncated, info)
                 t, r, terminated, truncated, info = self.env.step(action)
 
-                if terminated or truncated:
-                    self.reward_signal.add(r)
-                    self.win_percentage.add(r)
-
                 # render environment (don't render every step, only every X-th, or at the end of the learning process)
                 self.env.render()
 
@@ -91,6 +122,8 @@ class TabularAgent(Agent):
                 # break if episode is over and inform learning strategy
                 if percept.done:
                     self.learning_strategy.on_episode_end()
+                    self.reward_signal.add(r)
+                    self.win_percentage.add(r)
                     break
 
             # end episode

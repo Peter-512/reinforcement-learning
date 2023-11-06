@@ -51,6 +51,7 @@ class LearningStrategy(ABC):
         self.ε = self.ε_min + (self.ε_max - self.ε_min) * np.exp(-self.λ * self.τ)
 
     def on_episode_end(self):
+        # self.τ += 1
         pass
 
     def show_policy(self):

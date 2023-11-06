@@ -43,14 +43,18 @@ class MarkovDecisionProcess:
         return self.P[tsa]
 
     def reward(self, state: int, action: int) -> float:
-        # FIXME
         return self._reward_model[state, action]
 
     def update_reward(self, p: Percept) -> None:
-        self._reward_model[p.state, p.action] = p.reward
+        state, action, reward, next_state, _ = p
+        self._reward_model[state, action] += (reward - self._reward_model[state, action]) / self.n_sa[state, action]
 
     def update_counts(self, percept: Percept) -> None:
-        self.n_sa[percept.state, percept.action] += 1
+        state, action, _, next_state, _ = percept
+        self.n_sa[state, action] += 1
+        self.n_tsa[state, next_state, action] += 1
 
     def update_transition_model(self, percept: Percept) -> None:
-        self.n_tsa[percept.state, percept.next_state, percept.action] += 1
+        state, action, _, next_state, _ = percept
+        for s in range(self.n_states):
+            self.P[state, s, action] = self.n_tsa[state, s, action] / self.n_sa[state, action]
