@@ -77,3 +77,21 @@ class EpsilonDecay(Plotter):
         plt.yticks([0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1])
         plt.grid(True)
         plt.show()
+
+
+class EpisodeLength(Plotter):
+    def __init__(self, strategy):
+        super().__init__(strategy)
+        self.episode_lengths = []
+
+    def add(self, value):
+        self.episodes.append(next(self.episodes_counter))
+        self.episode_lengths.append(value)
+
+    def plot(self):
+        plt.plot(self.episodes, self.episode_lengths, linewidth=2.0)
+        plt.xlabel('Episodes')
+        plt.ylabel('Episode Length')
+        plt.title('Episode Length for ' + self.strategy + ' Strategy')
+        plt.grid(True)
+        plt.show()

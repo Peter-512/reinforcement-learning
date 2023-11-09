@@ -29,8 +29,8 @@ class Episode:
 
     def compute_returns(self, γ) -> None:
         """ For EACH Percept in the Episode, calculate its discounted return Gt"""
-        for percept in self._percepts:
-            percept._return = percept.reward + γ ** percept.next_state
+        for t, percept in enumerate(self._percepts):
+            percept._return = percept.reward + γ ** t
 
     def sample(self, batch_size: int):
         """ Sample and return a random batch of Percepts from this Episode """

@@ -6,7 +6,7 @@ from agent.percept import Percept
 from environment.environment import Environment
 from learning.learningstrategy import LearningStrategy
 from learning.tabular.tabular_learning import TabularLearner
-from stats.reward_signal import RewardSignal, WinPercentage, EpsilonDecay
+from stats.reward_signal import RewardSignal, WinPercentage, EpsilonDecay, EpisodeLength
 from stats.graph_plotter import Stats
 from environment.markovdecisionprocess import MarkovDecisionProcess
 
@@ -26,6 +26,7 @@ class Agent:
         self.reward_signal = RewardSignal(learning_strategy.__class__.__name__)
         self.win_percentage = WinPercentage(learning_strategy.__class__.__name__)
         self.epsilon_decay = EpsilonDecay(learning_strategy.__class__.__name__)
+        self.episode_duration_plotter = EpisodeLength(learning_strategy.__class__.__name__)
 
     @abstractmethod
     def train(self) -> None:
@@ -128,6 +129,7 @@ class TabularAgent(Agent):
                     self.reward_signal.add(r)
                     self.win_percentage.add(r)
                     self.epsilon_decay.add(self.learning_strategy.ε)
+                    self.episode_duration_plotter.add(self.learning_strategy.t)
                     break
 
             # end episode
@@ -141,11 +143,13 @@ class TabularAgent(Agent):
                 # self.reward_signal.plot()
                 self.win_percentage.plot()
                 # self.epsilon_decay.plot()
+                # self.episode_duration_plotter.plot()
 
         self.env.close()
         self.reward_signal.plot()
         self.win_percentage.plot()
         self.epsilon_decay.plot()
+        self.episode_duration_plotter.plot()
         self.stats_generator.generate_final_policy_gif(
             np.array(self.learning_strategy.get_ideal_path()).reshape(self.env.map_shape),
             self.env.map_arr, self.learning_strategy.__class__.__name__)

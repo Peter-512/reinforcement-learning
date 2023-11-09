@@ -10,15 +10,15 @@ if __name__ == '__main__':
     print(environment.map)
 
     # create a learning strategy
-    learning_strategy: TabularLearner = Qlearning(environment, α=0.7, λ=0.003, γ=0.99, ε_min=0.001, ε_max=0.1,
-                                                  t_max=100)
-    # learning_strategy: TabularLearner = Qlearning(environment, α=0.5, λ=0.004, γ=0.99, ε_min=0.000005, ε_max=0.5,
+    # learning_strategy: TabularLearner = Qlearning(environment, α=0.7, λ=0.0008, γ=0.7, ε_min=0.01, ε_max=1,
+    #                                               t_max=10000)
+    # learning_strategy: TabularLearner = Qlearning(environment, α=0.5, λ=0.006, γ=0.995, ε_min=0.000005, ε_max=0.5,
     #                                               t_max=10000)
     # learning_strategy: TabularLearner = NStepQlearning(environment, 10, λ=0.004, α=0.5, γ=0.99, ε_min=0.000005,
     #                                                    ε_max=0.5,
     #                                                    t_max=10000)
-    # learning_strategy: TabularLearner = MonteCarloLearning(environment, α=0.7, λ=0.0009, γ=0.99, ε_min=0.001,
-    #                                                        ε_max=0.1, t_max=100)
+    learning_strategy: TabularLearner = MonteCarloLearning(environment, α=0.7, λ=0.0009, γ=0.99, ε_min=0.001,
+                                                           ε_max=0.1, t_max=1000)
 
     # create an Agent that uses a Strategy
     agent: Agent = TabularAgent(environment, learning_strategy, n_episodes=10_000)
