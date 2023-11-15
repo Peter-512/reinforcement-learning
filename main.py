@@ -1,4 +1,4 @@
-from agent.agent import TabularAgent, Agent
+from agent.agent import TabularAgent, Agent, ApproximateAgent
 from environment.markovdecisionprocess import MarkovDecisionProcess
 from environment.openai import FrozenLakeEnvironment, CliffWalkingEnvironment, CartPoleEnvironment
 from learning.approximate.deep_qlearning import DeepQLearning
@@ -27,6 +27,8 @@ if __name__ == '__main__':
 
     environment = CartPoleEnvironment(render=True)
 
-    learning_strategy = DeepQLearning(environment, batch_size=32, ddqn=False, λ=0.0005, γ=0.99, t_max=200, C=10)
+    learning_strategy = DeepQLearning(environment, batch_size=64, ddqn=False, λ=0.0005, γ=0.99, t_max=10000, C=10)
 
-    agent: Agent = Agent(environment, learning_strategy, n_episodes=10_000)
+    agent: Agent = ApproximateAgent(environment, learning_strategy, n_episodes=10_000)
+
+    agent.train()
