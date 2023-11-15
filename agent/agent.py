@@ -37,47 +37,6 @@ class Agent:
         return self.episode_count > self.n_episodes
 
 
-class SuperAgent(Agent):
-    def __init__(self, mdp: MarkovDecisionProcess, n_episodes=10_000):
-        self.mdp = mdp
-        self.env = mdp.env
-        super().__init__(mdp.env, n_episodes=n_episodes, learning_strategy=None)
-
-    def train(self):
-        while not self.done:
-            # start a new episode
-            episode = Episode(self.env)
-            self.episodes.append(episode)
-            # initialize the start state
-            state, _ = self.env.reset()
-
-            while True:
-                action = self.mdp.best_action(state)
-                t, r, terminated, truncated, info = self.env.step(action)
-                if terminated and r == 0:
-                    r = -1
-                elif not terminated:
-                    r = -0.01
-                elif terminated and r == 1:
-                    r = 100
-                self.env.render()
-                percept = Percept((state, action, r, t, terminated))
-                episode.add(percept)
-                self.mdp.update((state, action, r, t, terminated))
-                state = percept.next_state
-                if percept.done:
-                    break
-
-            self.episode_count += 1
-            self.win_percentage.add(r)
-            win = 1 if r == 100 else 0
-            self.reward_signal.add(r)
-
-        self.env.close()
-        self.win_percentage.plot()
-        self.reward_signal.plot()
-
-
 class TabularAgent(Agent):
 
     def __init__(self, environment: Environment, learning_strategy: TabularLearner, n_episodes=10_000) -> None:
