@@ -91,8 +91,8 @@ class DeepQLearning(LearningStrategy):
 
     def train_network(self, training_set):
         """ Train neural net on training set """
-        for state, q in training_set:
-            self.q1.fit(state, q)
+        # self.q1.compile(optimizer=keras.optimizers.legacy.Adam(learning_rate=0.001), loss='mse')
+        self.q1.fit(training_set)
 
     def build_network(self):
         """ Build neural net """
