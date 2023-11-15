@@ -21,12 +21,6 @@ class Agent:
         self.episodes: [Episode] = []
         self.n_episodes = n_episodes  # total episodes
         self.episode_count = 0
-        self.stats_episodes = stats_episodes
-        self.stats_generator = Stats(environment.map_shape, stats_episodes)
-        self.reward_signal = RewardSignal(learning_strategy.__class__.__name__)
-        self.win_percentage = WinPercentage(learning_strategy.__class__.__name__)
-        self.epsilon_decay = EpsilonDecay(learning_strategy.__class__.__name__)
-        self.episode_duration_plotter = EpisodeLength(learning_strategy.__class__.__name__)
 
     @abstractmethod
     def train(self) -> None:
@@ -41,6 +35,12 @@ class TabularAgent(Agent):
 
     def __init__(self, environment: Environment, learning_strategy: TabularLearner, n_episodes=10_000) -> None:
         super().__init__(environment, learning_strategy, n_episodes)
+        self.stats_episodes = stats_episodes
+        self.stats_generator = Stats(environment.map_shape, stats_episodes)
+        self.reward_signal = RewardSignal(learning_strategy.__class__.__name__)
+        self.win_percentage = WinPercentage(learning_strategy.__class__.__name__)
+        self.epsilon_decay = EpsilonDecay(learning_strategy.__class__.__name__)
+        self.episode_duration_plotter = EpisodeLength(learning_strategy.__class__.__name__)
 
     def train(self) -> None:
         super(TabularAgent, self).train()
