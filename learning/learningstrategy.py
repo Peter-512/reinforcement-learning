@@ -33,7 +33,6 @@ class LearningStrategy(ABC):
         # at this point subclasses insert their implementation
         # see for example be\kdg\rl\learning\tabular\tabular_learning.py
         self.t += 1
-        # self.τ += 1
 
     @abstractmethod
     def on_episode_start(self):
@@ -52,7 +51,6 @@ class LearningStrategy(ABC):
 
     def on_episode_end(self):
         self.τ += 1
-        # pass
 
     def show_policy(self):
         print("Policy:")

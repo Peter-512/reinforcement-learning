@@ -1,19 +1,18 @@
-from agent.agent import TabularAgent, Agent, SuperAgent
+from agent.agent import TabularAgent, Agent
 from environment.markovdecisionprocess import MarkovDecisionProcess
-from environment.openai import FrozenLakeEnvironment, CliffWalkingEnvironment
+from environment.openai import FrozenLakeEnvironment, CliffWalkingEnvironment, CartPoleEnvironment
+from learning.approximate.deep_qlearning import DeepQLearning
 from learning.tabular.qlearning import NStepQlearning, MonteCarloLearning, Qlearning
 from learning.tabular.tabular_learning import TabularLearner
 
 if __name__ == '__main__':
     # example use of the code base
-    environment = FrozenLakeEnvironment(render=False, is_slippery=True, random=False, size=4)
-    print(environment.map)
+    # environment = FrozenLakeEnvironment(render=False, is_slippery=True, random=False, size=4)
+    # print(environment.map)
 
     # create a learning strategy
-    # learning_strategy: TabularLearner = Qlearning(environment, α=0.7, λ=0.0008, γ=0.9, ε_min=0.01, ε_max=1,
+    # learning_strategy: TabularLearner = Qlearning(environment, α=0.5, λ=0.006, γ=0.995, ε_min=0.000005, ε_max=0.5,
     #                                               t_max=10000)
-    learning_strategy: TabularLearner = Qlearning(environment, α=0.5, λ=0.006, γ=0.995, ε_min=0.000005, ε_max=0.5,
-                                                  t_max=10000)
     # learning_strategy: TabularLearner = NStepQlearning(environment, 10, λ=0.004, α=0.5, γ=0.99, ε_min=0.000005,
     #                                                    ε_max=0.5,
     #                                                    t_max=10000)
@@ -21,7 +20,13 @@ if __name__ == '__main__':
     #                                                        ε_max=0.1, t_max=1000)
 
     # create an Agent that uses a Strategy
-    agent: Agent = TabularAgent(environment, learning_strategy, n_episodes=10_000)
-    agent.train()
+    # agent: Agent = TabularAgent(environment, learning_strategy, n_episodes=10_000)
+    # agent.train()
+    #
+    # agent.learning_strategy.show_policy()
 
-    agent.learning_strategy.show_policy()
+    environment = CartPoleEnvironment(render=True)
+
+    learning_strategy = DeepQLearning(environment, batch_size=32, ddqn=False, λ=0.0005, γ=0.99, t_max=200, C=10)
+
+    agent: Agent = Agent(environment, learning_strategy, n_episodes=10_000)
