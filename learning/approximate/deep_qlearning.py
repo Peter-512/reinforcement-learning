@@ -2,7 +2,7 @@ import random
 
 import keras
 import numpy as np
-from keras import Model
+from keras import Model, layers, models, backend
 
 from agent.episode import Episode
 from agent.percept import Percept
@@ -20,8 +20,8 @@ class ReplayMemory:
     def add(self, experience):
         """ Add experience to memory """
         self.memory.append(experience)
-        if len(self.memory) > self.max_size:
-            self.memory.pop(0)
+        # if len(self.memory) > self.max_size:
+        #     self.memory.pop(0)
 
     def sample(self, batch_size):
         """ Sample batch from memory """
@@ -41,7 +41,7 @@ class DeepQLearning(LearningStrategy):
     q2: Model  # keras NN
 
     def __init__(self, environment: Environment, batch_size: int, ddqn=False, λ=0.0005, γ=0.99, t_max=200,
-                 C=10) -> None:
+                 C=10, max_memory=10_000) -> None:
         super().__init__(environment, λ, γ, t_max)
         self.batch_size = batch_size
         self.ddqn = ddqn  # are we using double deep q learning network?
@@ -49,7 +49,9 @@ class DeepQLearning(LearningStrategy):
         self.q2 = self.build_network()
         self.C = C  # how often to update target network
         self.count = 0
-        self.replay_memory = ReplayMemory()
+        self.replay_memory = ReplayMemory(max_memory)
+        print(self.q1.summary())
+        print(self.q2.summary())
 
     def on_episode_start(self):
         # TODO: COMPLETE THE CODE
@@ -94,13 +96,13 @@ class DeepQLearning(LearningStrategy):
 
     def build_network(self):
         """ Build neural net """
-        keras.backend.clear_session()
-        keras.backend.set_floatx('float64')
-        keras.backend.set_epsilon(1e-4)
-        return keras.models.Sequential([
-            keras.layers.Dense(64, activation='relu', input_shape=(self.env.state_size,)),
-            keras.layers.Dense(64, activation='relu'),
-            keras.layers.Dense(self.env.n_actions, activation='linear')
+        backend.clear_session()
+        backend.set_floatx('float64')
+        backend.set_epsilon(1e-4)
+        return models.Sequential([
+            layers.Dense(64, activation='relu', input_shape=(self.env.state_size,)),
+            layers.Dense(32, activation='relu'),
+            layers.Dense(self.env.n_actions, activation='linear')
         ])
 
     def learn_from_batch(self, batch):
