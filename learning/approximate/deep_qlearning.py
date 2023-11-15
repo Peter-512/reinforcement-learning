@@ -66,7 +66,7 @@ class DeepQLearning(LearningStrategy):
 
     def learn(self, episode: Episode):
         """ Sample batch from Episode and train NN on sample"""
-        self.replay_memory.add(episode)
+        self.replay_memory.add(episode.percepts(1)[0])
         if self.replay_memory.size() > self.batch_size:
             batch = self.replay_memory.sample(self.batch_size)
             self.learn_from_batch(batch)
