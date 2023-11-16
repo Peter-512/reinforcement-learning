@@ -78,20 +78,20 @@ class DeepQLearning(LearningStrategy):
         for percept in batch:
             q = self.q1.predict(percept.state)
             if self.ddqn:
-                a_star = np.argmax(self.q1(percept.next_state))
-                q_star = self.q2(percept.next_state)[a_star]
+                a_star = np.argmax(self.q1.predict(percept.next_state))
+                q_star = self.q2.predict(percept.next_state)[a_star]
             else:
-                q_star = max(self.q2(percept.next_state))
+                q_star = max(self.q2.predict(percept.next_state))
             if percept.done:
                 q[percept.action] = percept.reward
             else:
                 q[percept.action] = percept.reward + self.γ * q_star
-            training_set.append((percept.state, q(percept.state)))
+            #     add the new row to the training set
+            training_set.append((percept.state, q))
         return training_set
 
     def train_network(self, training_set):
         """ Train neural net on training set """
-        # self.q1.compile(optimizer=keras.optimizers.legacy.Adam(learning_rate=0.001), loss='mse')
         self.q1.fit(training_set)
 
     def build_network(self):
@@ -99,11 +99,13 @@ class DeepQLearning(LearningStrategy):
         backend.clear_session()
         backend.set_floatx('float64')
         backend.set_epsilon(1e-4)
-        return models.Sequential([
-            layers.Dense(64, activation='relu', input_shape=(self.env.state_size,)),
+        model = models.Sequential([
+            layers.Dense(64, activation='relu', input_shape=(self.batch_size, self.env.state_size)),
             layers.Dense(32, activation='relu'),
             layers.Dense(self.env.n_actions, activation='linear')
         ])
+        model.compile(optimizer=keras.optimizers.legacy.Adam(learning_rate=0.001), loss='mse')
+        return model
 
     def learn_from_batch(self, batch):
         """ Train neural net on batch """
