@@ -31,8 +31,9 @@ class Agent:
 
 
 class ApproximateAgent(Agent):
-    def __init__(self, environment: Environment, learning_strategy: DeepQLearning, n_episodes=10_000) -> None:
+    def __init__(self, environment: Environment, learning_strategy: LearningStrategy, n_episodes=10_000) -> None:
         super().__init__(environment, learning_strategy, n_episodes)
+        self.episode_duration_plotter = EpisodeLength(learning_strategy.__class__.__name__)
 
     def train(self) -> None:
         super().train()
@@ -55,12 +56,12 @@ class ApproximateAgent(Agent):
                 t, r, terminated, truncated, info = self.env.step(action)
 
                 # render environment (don't render every step, only every X-th, or at the end of the learning process)
-                if self.episode_count % 1000 == 0:
-                    self.env.render()
+                self.env.render()
 
                 # create Percept object from observed values state,action,r,s' (SARS') and terminate flag, but
                 # ignore values truncated and info
-                percept = Percept((state, action, r, t, terminated))
+                done = True if self.learning_strategy.t >= 500 or terminated else False
+                percept = Percept((state, action, r, t, done))
                 # print(percept)
 
                 # add the newly created Percept to the Episode
@@ -74,9 +75,15 @@ class ApproximateAgent(Agent):
 
                 if percept.done:
                     self.learning_strategy.on_episode_end()
+                    self.episode_duration_plotter.add(self.learning_strategy.t)
                     break
 
             self.episode_count += 1
+            print('episode:', self.episode_count)
+
+            if self.episode_count % 50 == 0:
+                self.episode_duration_plotter.plot()
+                self.episode_duration_plotter.reset()
 
         self.env.close()
 

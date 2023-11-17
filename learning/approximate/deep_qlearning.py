@@ -13,22 +13,25 @@ from learning.learningstrategy import LearningStrategy
 class ReplayMemory:
     """ Replay memory for experience replay """
 
-    def __init__(self, max_size=10000):
+    def __init__(self, max_size=512):
         self.max_size = max_size
-        self.memory = []
+        self.memory = np.empty(max_size, dtype=object)
+        self.index = 0
+        self.size = 0
 
     def add(self, experience):
         """ Add experience to memory """
-        self.memory.append(experience)
-        # if len(self.memory) > self.max_size:
-        #     self.memory.pop(0)
+        self.memory[self.index] = experience
+        self.index = (self.index + 1) % self.max_size
+        self.size = min(self.size + 1, self.max_size)
 
     def sample(self, batch_size):
         """ Sample batch from memory """
-        return random.sample(self.memory, batch_size)
+        indices = np.random.choice(self.size, batch_size, replace=False)
+        return self.memory[indices]
 
     def size(self):
-        return len(self.memory)
+        return self.size
 
 
 class DeepQLearning(LearningStrategy):
@@ -41,8 +44,8 @@ class DeepQLearning(LearningStrategy):
     q2: Model  # keras NN
 
     def __init__(self, environment: Environment, batch_size: int, ddqn=False, λ=0.0005, γ=0.99, t_max=200,
-                 C=10, max_memory=10_000) -> None:
-        super().__init__(environment, λ, γ, t_max)
+                 C=10, max_memory=512, ϵ_min=0.1, ϵ_max=1.0, verbose=False) -> None:
+        super().__init__(environment, λ, γ, t_max, ϵ_min, ϵ_max)
         self.batch_size = batch_size
         self.ddqn = ddqn  # are we using double deep q learning network?
         self.q1 = self.build_network()
@@ -50,11 +53,12 @@ class DeepQLearning(LearningStrategy):
         self.C = C  # how often to update target network
         self.count = 0
         self.replay_memory = ReplayMemory(max_memory)
+        self.verbose = 1 if verbose else 0
         print(self.q1.summary())
         print(self.q2.summary())
 
     def on_episode_start(self):
-        # TODO: COMPLETE THE CODE
+        super().on_episode_start()
         pass
 
     def next_action(self, state):
@@ -62,54 +66,62 @@ class DeepQLearning(LearningStrategy):
         if self.ϵ > random.random():
             return random.randint(0, self.env.n_actions - 1)
         else:
-            return np.argmax(self.q1.predict(state))
+            return np.argmax(self.q1.predict(np.array([state]), verbose=0)[0])
 
     def learn(self, episode: Episode):
         """ Sample batch from Episode and train NN on sample"""
         self.replay_memory.add(episode.percepts(1)[0])
-        if self.replay_memory.size() > self.batch_size:
+        if self.replay_memory.size > self.batch_size:
             batch = self.replay_memory.sample(self.batch_size)
             self.learn_from_batch(batch)
+        self.decay()
         super().learn(episode)
 
     def build_training_set(self, batch: [Percept]):
         """ Build training set from episode """
-        training_set = []
-        for percept in batch:
-            q = self.q1.predict(percept.state)
-            if self.ddqn:
-                a_star = np.argmax(self.q1.predict(percept.next_state))
-                q_star = self.q2.predict(percept.next_state)[a_star]
-            else:
-                q_star = max(self.q2.predict(percept.next_state))
-            if percept.done:
-                q[percept.action] = percept.reward
-            else:
-                q[percept.action] = percept.reward + self.γ * q_star
-            #     add the new row to the training set
-            training_set.append((percept.state, q))
-        return training_set
+        states = np.array([percept.state for percept in batch])
+        next_states = np.array([percept.next_state for percept in batch])
+        q_values = self.q1.predict(states, verbose=0, batch_size=self.batch_size)
+        q_star_values = self.q2.predict(next_states, verbose=0, batch_size=self.batch_size)
+        a_star_values = None
+        if self.ddqn:
+            a_star_values = self.q1.predict(next_states, verbose=0, batch_size=self.batch_size)
 
-    def train_network(self, training_set):
+        for i, percept in enumerate(batch):
+            if self.ddqn:
+                a_star = np.argmax(a_star_values[i])
+                q_star = q_star_values[i][a_star]
+            else:
+                q_star = max(q_star_values[i])
+            if percept.done:
+                q_values[i][percept.action] = percept.reward
+            else:
+                q_values[i][percept.action] = percept.reward + self.γ * q_star
+        return states, q_values
+
+    def train_network(self, inputs, q_values):
         """ Train neural net on training set """
-        self.q1.fit(training_set)
+        self.q1.fit(inputs, q_values, batch_size=self.batch_size, epochs=1, verbose=self.verbose)
 
     def build_network(self):
         """ Build neural net """
         backend.clear_session()
         backend.set_floatx('float64')
         backend.set_epsilon(1e-4)
-        model = models.Sequential([
-            layers.Dense(64, activation='relu', input_shape=(self.batch_size, self.env.state_size)),
-            layers.Dense(32, activation='relu'),
-            layers.Dense(self.env.n_actions, activation='linear')
-        ])
-        model.compile(optimizer=keras.optimizers.legacy.Adam(learning_rate=0.001), loss='mse')
+        model = models.Sequential()
+        model.add(keras.Input(shape=(self.env.state_size,)))
+        model.add(layers.Dense(64, activation='relu'))
+        model.add(layers.Dense(32, activation='relu'))
+        model.add(layers.Dense(self.env.n_actions, activation='linear'))
+        model.compile(optimizer="adam", loss='mse', metrics=['accuracy'])
         return model
 
     def learn_from_batch(self, batch):
         """ Train neural net on batch """
-        training_set = self.build_training_set(batch)
-        self.train_network(training_set)
+        inputs, q_values = self.build_training_set(batch)
+        self.train_network(inputs, q_values)
+        self.count += 1
         if self.count % self.C == 0:
+            if self.verbose:
+                print('updating target network')
             self.q2.set_weights(self.q1.get_weights())

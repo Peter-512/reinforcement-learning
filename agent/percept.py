@@ -34,8 +34,9 @@ class Percept:
 
     def __repr__(self):
         # uses SARS - format as a convention
-        direction = {0: 'left', 1: 'down', 2: 'right', 3: 'up'}
-        return '<in {} do {} get {} -> {}>'.format(self._state, direction[self._action], self._reward, self._next_state)
+        direction = {0: 'left', 1: 'right'}
+        return '<in {} do {} get {} -> {}> {}'.format(self.state, direction[self.action], self.reward,
+                                                      self.next_state, 'done' if self.done else '')
 
     def __hash__(self):
         return hash((self._state, self._action, self._reward, self._next_state))

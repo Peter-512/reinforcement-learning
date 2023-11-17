@@ -88,6 +88,10 @@ class EpisodeLength(Plotter):
         self.episodes.append(next(self.episodes_counter))
         self.episode_lengths.append(value)
 
+    def reset(self):
+        self.episodes = []
+        self.episode_lengths = []
+
     def plot(self):
         plt.plot(self.episodes, self.episode_lengths, linewidth=2.0)
         plt.xlabel('Episodes')
