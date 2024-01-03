@@ -8,6 +8,7 @@ from agent.episode import Episode
 from agent.percept import Percept
 from environment.environment import Environment
 from learning.learningstrategy import LearningStrategy
+import pickle
 
 
 class ReplayMemory:
@@ -44,15 +45,25 @@ class DeepQLearning(LearningStrategy):
     q2: Model  # keras NN
 
     def __init__(self, environment: Environment, batch_size: int, ddqn=False, λ=0.0005, γ=0.99, t_max=200,
-                 C=10, max_memory=512, ϵ_min=0.1, ϵ_max=1.0, verbose=False) -> None:
+                 C=10, max_memory=512, ϵ_min=0.1, ϵ_max=1.0, verbose=False, use_savepoint=False) -> None:
         super().__init__(environment, λ, γ, t_max, ϵ_min, ϵ_max)
         self.batch_size = batch_size
         self.ddqn = ddqn  # are we using double deep q learning network?
-        self.q1 = self.build_network()
-        self.q2 = self.build_network()
+        if use_savepoint:
+            model = 'savepoints/DeepQLearning/model.keras'
+            self.q1 = models.load_model(model)
+            self.q2 = models.load_model(model)
+        else:
+            self.q1 = self.build_network()
+            self.q2 = self.build_network()
         self.C = C  # how often to update target network
         self.count = 0
-        self.replay_memory = ReplayMemory(max_memory)
+        if use_savepoint:
+            replay_memory = 'savepoints/DeepQLearning/replay_memory.pickle'
+            with open(replay_memory, 'rb') as f:
+                self.replay_memory = pickle.load(f)
+        else:
+            self.replay_memory = ReplayMemory(max_memory)
         self.verbose = 1 if verbose else 0
         print(self.q1.summary())
         print(self.q2.summary())

@@ -26,10 +26,15 @@ if __name__ == '__main__':
     #
     # agent.learning_strategy.show_policy()
 
-    environment = CartPoleEnvironment(render=False)
+    # environment = CartPoleEnvironment(render=False)
+    environment = CartPoleEnvironment(render=True)
+
+    # learning_strategy: LearningStrategy = DeepQLearning(environment, batch_size=64, ddqn=False, λ=0.006, γ=0.99,
+    #                                                     t_max=10000, C=10, ϵ_min=0.000005, ϵ_max=0.5, verbose=False)
 
     learning_strategy: LearningStrategy = DeepQLearning(environment, batch_size=64, ddqn=False, λ=0.006, γ=0.99,
-                                                        t_max=10000, C=10, ϵ_min=0.000005, ϵ_max=0.5, verbose=False)
+                                                        t_max=10000, C=10, ϵ_min=0.000005, ϵ_max=0.5, verbose=False,
+                                                        use_savepoint=True)
 
     agent = ApproximateAgent(environment, learning_strategy, n_episodes=10_000)
 

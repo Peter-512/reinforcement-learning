@@ -9,6 +9,7 @@ from learning.approximate.deep_qlearning import DeepQLearning
 from learning.tabular.tabular_learning import TabularLearner
 from stats.reward_signal import RewardSignal, WinPercentage, EpsilonDecay, EpisodeLength
 from stats.graph_plotter import Stats
+from stats.savepoint import SavePoint
 
 
 class Agent:
@@ -34,6 +35,7 @@ class ApproximateAgent(Agent):
     def __init__(self, environment: Environment, learning_strategy: LearningStrategy, n_episodes=10_000) -> None:
         super().__init__(environment, learning_strategy, n_episodes)
         self.episode_duration_plotter = EpisodeLength(learning_strategy.__class__.__name__)
+        self.savepoint = SavePoint(learning_strategy.__class__.__name__)
 
     def train(self) -> None:
         super().train()
@@ -84,6 +86,9 @@ class ApproximateAgent(Agent):
             if self.episode_count % 50 == 0:
                 self.episode_duration_plotter.plot()
                 self.episode_duration_plotter.reset()
+
+            if self.episode_count % 100 == 0:
+                self.savepoint.save(self)
 
         self.env.close()
 
