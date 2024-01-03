@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 
 from itertools import count
 
+import numpy as np
+
+from stats.graph_plotter import create_directory_if_not_exists, clear_directory
+
 
 class Plotter(ABC):
     def __init__(self, strategy):
@@ -82,20 +86,35 @@ class EpsilonDecay(Plotter):
 class EpisodeLength(Plotter):
     def __init__(self, strategy):
         super().__init__(strategy)
+        create_directory_if_not_exists("./screenshots")
+        clear_directory("./screenshots")
         self.episode_lengths = []
+        self.all_episode_lengths = []
+        self.averages = []
 
     def add(self, value):
         self.episodes.append(next(self.episodes_counter))
         self.episode_lengths.append(value)
+        self.all_episode_lengths.append(value)
+        self.averages.append(np.mean(self.all_episode_lengths))
 
     def reset(self):
         self.episodes = []
         self.episode_lengths = []
 
+    def moving_average(self, window):
+        return self.averages[-window:]
+
     def plot(self):
-        plt.plot(self.episodes, self.episode_lengths, linewidth=2.0)
+        plt.plot(self.episodes, self.episode_lengths, linewidth=2.0, label='Episode Length')
+        moving_averages = self.moving_average(len(self.episodes))
+        plt.plot(self.episodes, moving_averages, linewidth=2.0, label='Moving Average')
+        plt.ylim(0, 505)
+        plt.grid()
+        plt.hlines(195, self.episodes[0], self.episodes[-1], colors='red', linestyles='dashed', label='Goal')
+        plt.legend()
         plt.xlabel('Episodes')
         plt.ylabel('Episode Length')
         plt.title('Episode Length for ' + self.strategy + ' Strategy')
-        plt.grid(True)
+        plt.savefig(f"./screenshots/episodes-{self.episodes[0]}-{self.episodes[-1]}.png")
         plt.show()
