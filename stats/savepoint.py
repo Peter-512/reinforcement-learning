@@ -2,8 +2,7 @@ import pickle
 
 
 class SavePoint:
-    def __init__(self, dir_name):
-        base_name = 'savepoints'
+    def __init__(self, dir_name, base_name='savepoints'):
         self.dir_name = f"{base_name}/{dir_name}"
 
     def save(self, agent):

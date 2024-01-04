@@ -26,15 +26,20 @@ if __name__ == '__main__':
     #
     # agent.learning_strategy.show_policy()
 
+    print("Have you moved any screenshots you want to keep out of the screenshots folder?")
+    input("Press Enter to continue...")
+
     use_savepoint = False
+    savepoint_base_path = 'savepoints'
 
     environment = CartPoleEnvironment(render=True) if use_savepoint else CartPoleEnvironment(render=False)
 
     learning_strategy: LearningStrategy = DeepQLearning(environment, batch_size=64, ddqn=False, λ=0.006, γ=0.99,
                                                         t_max=10000, C=10, ϵ_min=0.000005,
                                                         ϵ_max=0.00005 if use_savepoint else 0.5, verbose=False,
-                                                        use_savepoint=use_savepoint)
+                                                        use_savepoint=use_savepoint,
+                                                        savepoint_base_path=savepoint_base_path)
 
-    agent = ApproximateAgent(environment, learning_strategy, n_episodes=10_000)
+    agent = ApproximateAgent(environment, learning_strategy, n_episodes=10_000, savepoint_base_path=savepoint_base_path)
 
     agent.train()

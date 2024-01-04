@@ -32,10 +32,11 @@ class Agent:
 
 
 class ApproximateAgent(Agent):
-    def __init__(self, environment: Environment, learning_strategy: LearningStrategy, n_episodes=10_000) -> None:
+    def __init__(self, environment: Environment, learning_strategy: LearningStrategy, n_episodes=10_000,
+                 savepoint_base_path='savepoints') -> None:
         super().__init__(environment, learning_strategy, n_episodes)
         self.episode_duration_plotter = EpisodeLength(learning_strategy.__class__.__name__)
-        self.savepoint = SavePoint(learning_strategy.__class__.__name__)
+        self.savepoint = SavePoint(learning_strategy.__class__.__name__, savepoint_base_path)
 
     def train(self) -> None:
         super().train()

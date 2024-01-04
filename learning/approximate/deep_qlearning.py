@@ -45,12 +45,13 @@ class DeepQLearning(LearningStrategy):
     q2: Model  # keras NN
 
     def __init__(self, environment: Environment, batch_size: int, ddqn=False, λ=0.0005, γ=0.99, t_max=200,
-                 C=10, max_memory=512, ϵ_min=0.1, ϵ_max=1.0, verbose=False, use_savepoint=False) -> None:
+                 C=10, max_memory=512, ϵ_min=0.1, ϵ_max=1.0, verbose=False, use_savepoint=False,
+                 savepoint_base_path='savepoints') -> None:
         super().__init__(environment, λ, γ, t_max, ϵ_min, ϵ_max)
         self.batch_size = batch_size
         self.ddqn = ddqn  # are we using double deep q learning network?
         if use_savepoint:
-            model = 'savepoints/DeepQLearning/model.keras'
+            model = f'{savepoint_base_path}/DeepQLearning/model.keras'
             self.q1 = models.load_model(model)
             self.q2 = models.load_model(model)
         else:
@@ -59,7 +60,7 @@ class DeepQLearning(LearningStrategy):
         self.C = C  # how often to update target network
         self.count = 0
         if use_savepoint:
-            replay_memory = 'savepoints/DeepQLearning/replay_memory.pickle'
+            replay_memory = f'{savepoint_base_path}/DeepQLearning/replay_memory.pickle'
             with open(replay_memory, 'rb') as f:
                 self.replay_memory = pickle.load(f)
         else:
