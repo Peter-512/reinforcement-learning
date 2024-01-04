@@ -64,7 +64,7 @@ class ApproximateAgent(Agent):
                 # create Percept object from observed values state,action,r,s' (SARS') and terminate flag, but
                 # ignore values truncated and info
                 done = True if self.learning_strategy.t >= 500 or terminated else False
-                percept = Percept((state, action, r, t, done))
+                percept = Percept((state, action, r, t, terminated))
                 # print(percept)
 
                 # add the newly created Percept to the Episode
@@ -76,7 +76,7 @@ class ApproximateAgent(Agent):
                 # update Agent's state
                 state = percept.next_state
 
-                if percept.done:
+                if done:
                     self.learning_strategy.on_episode_end()
                     self.episode_duration_plotter.add(self.learning_strategy.t)
                     break
