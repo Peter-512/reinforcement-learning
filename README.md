@@ -5,6 +5,7 @@ If you want to start training from scratch, make sure that `use_savepoint` is se
 If you want to continue training from a previously trained model, set it to `True`. It will then load the model and the
 replay memory from the `savepoints/DeepQLearning` directory.
 Savepoints are automatically created every 100 episodes.
+The current savepoint has learned for 2400 episodes.
 
 > Warning: If you don't want to overwrite your previous savepoints, make sure to move the `DeepQLearning` folder and its
 > contents to a different location, because it will just overwrite the contents of `savepoints`.
