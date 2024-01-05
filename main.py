@@ -30,7 +30,8 @@ if __name__ == '__main__':
     input("Press Enter to continue...")
 
     use_savepoint = False
-    savepoint_base_path = 'savepoints'
+    savepoint_load_from_base_path = 'savepoints'
+    savepoint_save_to_base_path = 'savepoints'
 
     environment = CartPoleEnvironment(render=True) if use_savepoint else CartPoleEnvironment(render=False)
 
@@ -38,8 +39,9 @@ if __name__ == '__main__':
                                                         t_max=10000, C=10, ϵ_min=0.000005,
                                                         ϵ_max=0.00005 if use_savepoint else 0.5, verbose=False,
                                                         use_savepoint=use_savepoint,
-                                                        savepoint_base_path=savepoint_base_path)
+                                                        savepoint_base_path=savepoint_load_from_base_path)
 
-    agent = ApproximateAgent(environment, learning_strategy, n_episodes=10_000, savepoint_base_path=savepoint_base_path)
+    agent = ApproximateAgent(environment, learning_strategy, n_episodes=10_000,
+                             savepoint_base_path=savepoint_save_to_base_path)
 
     agent.train()
